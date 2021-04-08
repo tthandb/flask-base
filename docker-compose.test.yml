@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:10.6
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test2017
+      - POSTGRES_DB=test_database
+
+  api-test:
+    image: test-backend:$BRANCH
+    env_file:
+      - env.docker
+    command: pipenv run pytest tests
+    depends_on:
+      - postgres

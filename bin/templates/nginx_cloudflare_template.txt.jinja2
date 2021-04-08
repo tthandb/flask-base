@@ -1,0 +1,10 @@
+server {
+    listen 80;
+
+    server_name {{domain}};
+    location / {
+        proxy_pass '{{destination_link}}';
+    }
+    error_log  /var/log/nginx/vue-app-error.log;
+    access_log /var/log/nginx/vue-app-access.log;
+}

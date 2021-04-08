@@ -1,0 +1,37 @@
+variables:
+  BUILD_WITH_ENV_PROCESSES: ( web )
+  BRANCH: $CI_COMMIT_REF_NAME
+  
+stages:
+  - test
+  - build
+  - staging
+
+api-test:
+  except:
+    - tags
+  image: docker/compose:latest
+  stage: test
+  before_script:
+    - docker build -t flask-backend:$BRANCH -f ./docker/Dockerfile .
+  script:
+    - docker-compose -f docker-compose.test.yml run api-test
+  after_script:
+    - docker-compose -f docker-compose.test.yml down
+
+bak-staging:
+  image: docker:stable
+  stage: staging
+  tags:
+    - staging
+  before_script:
+    - mv .env.staging.bak .env
+    - docker build -t flask-backend-api:$BRANCH -f ./uwsgi.Dockerfile .
+    - docker build -t flask-backend-worker:$BRANCH -f ./worker.Dockerfile .
+    - export API_IMAGE=flask-backend-api:$BRANCH
+    - export WORKER_IMAGE=flask-backend-worker:$BRANCH
+  script:
+    - docker-compose up -d
+  only:
+    - develop
+    - fix-staging-bak

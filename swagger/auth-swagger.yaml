@@ -1,0 +1,52 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: "Auth API"
+  description: "Auth API "
+host: api.example.com
+basePath: /api/v1/services
+schemes:
+  - https
+paths:
+  /auth:
+    post:
+      summary: Get token
+      description: Get token with email & password
+      parameters:
+        - name: body
+          in: body
+          type: string
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        201:
+          description: "Login successfully"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              token:
+                type: string
+              data:
+                $ref: "#/definitions/user"
+        400:
+          description: "Something failed !!"
+        404:
+          description: "User Not Found"
+definitions:
+  user:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      status:
+        type: string

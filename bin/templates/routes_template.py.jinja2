@@ -1,0 +1,7 @@
+
+from apis.{{folder_name}}.{{show_file_name}} import {{show_class_name}} # noqa
+from apis.{{folder_name}}.{{index_file_name}} import {{index_class_name}} # noqa
+
+api_routes.add_resource({{show_class_name}}, '/{{index_file_name}}/<int:id>')
+api_routes.add_resource({{index_class_name}}, '/{{index_file_name}}')
+

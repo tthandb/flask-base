@@ -1,0 +1,48 @@
+from flask import request
+from common.api import UResource
+from common.helpers.dict_ultility import to_dict
+from common.errors import UNotFound
+from app import db
+from database.session import session_scope
+from database.services.{{file_name}} import {{model_name}}Service
+
+
+class {{show_class_name}}(UResource):
+    def __init__(self):
+        self.session = db.session_factory()
+        self.{{file_name}}_service = {{model_name}}Service(
+            self.session
+        )
+
+    def get(self, id: int):
+        request_object = self.{{file_name}}_service.first(id=id)
+        if not request_object:
+            raise UNotFound('{{file_name}} not found')
+
+        return {
+            'message': 'Show {{file_name}} successfully',
+            'data': {
+                '{{file_name}}': to_dict(request_object)
+            }
+        }
+
+    def put(self, id: int):
+        params = request.get_json(force=True)
+        request_object = self.{{file_name}}_service.first(id=id)
+        if not request_object:
+            raise UNotFound('{{file_name}} not found')
+
+        with session_scope(self.session):
+            self.{{file_name}}_service.update(
+                request_object,
+                **params
+            )
+            object_json = to_dict(request_object)
+
+        return {
+            'message': 'Update {{file_name}} successfully',
+            'data': {
+                '{{file_name}}': object_json
+            }
+        }
+

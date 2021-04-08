@@ -1,0 +1,74 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="../swagger-ui.css" >
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16" />
+    <style>
+      html
+      {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+
+      *,
+      *:before,
+      *:after
+      {
+        box-sizing: inherit;
+      }
+
+      body
+      {
+        margin:0;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="swagger-ui">
+      <div class="opblock opblock-post" style="margin: 0px">
+        <div class="opblock-summary opblock-summary-post">
+          <span class="opblock-summary-path">Auth API</span>
+          <a href="/swagger?docs=auth" class="opblock-summary-method">link</a>
+        </div>
+      </div>
+    </div>
+    <div id="swagger-ui"></div>
+
+
+    <script src="./swagger-ui-bundle.js"> </script>
+    <script src="./swagger-ui-standalone-preset.js"> </script>
+    <script>
+    window.onload = function() {
+      var url = new URL(window.location.href);
+      var docs = url.searchParams.get("docs");
+      url = "/swagger-yaml/auth-swagger.yaml"
+      if (docs == "auth") {
+        url = "/swagger-yaml/auth-swagger.yaml"
+      } else if (docs == "user") {
+        url = "/swagger-yaml/user-swagger.yaml"
+      }
+      const ui = SwaggerUIBundle({
+        url: url,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      })
+      window.ui = ui
+    }
+  </script>
+  </body>
+</html>

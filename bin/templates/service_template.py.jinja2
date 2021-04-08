@@ -1,0 +1,9 @@
+from database.models.{{file_name}} import {{model_name}}
+from database.services.base import BaseService
+
+
+class {{model_name}}Service(BaseService):
+    def __init__(self, session):
+        self.session = session
+        self.model = {{model_name}}
+

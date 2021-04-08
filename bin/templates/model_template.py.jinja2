@@ -1,0 +1,10 @@
+from sqlalchemy import Column, {{all_type}}
+from database.models.base import DeclarativeBase, Base, DateTimestamp
+
+
+class {{model_name}}(DeclarativeBase, Base, DateTimestamp):
+    __tablename__ = '{{table_name}}'
+
+    id = Column(INTEGER, primary_key=True){% for column_info in column_infos %}
+    {{column_info['name']}} = Column({{column_info['type_name']}}, nullable={{column_info['nullable']}}, default={{column_info['default']}}){% endfor %}
+

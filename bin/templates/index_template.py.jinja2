@@ -1,0 +1,53 @@
+from flask import request
+from common.api import UResource
+from common.helpers.dict_ultility import to_dict
+from app import db
+from database.session import session_scope
+from database.services.{{file_name}} import {{model_name}}Service
+
+
+class {{index_class_name}}(UResource):
+    def __init__(self):
+        self.session = db.session_factory()
+        self.{{file_name}}_service = {{model_name}}Service(
+            self.session
+        )
+
+    def get(self):
+        params = request.args.to_dict()
+
+        page_no = params.get('page_no', 1)
+        per_page = params.get('per_page', 10)
+
+        limit = per_page
+        offset = (page_no - 1) * limit
+
+        total, objects = self.{{file_name}}_service.index(
+            limit=limit,
+            offset=offset
+        )
+
+        return {
+            'message': 'Index {{file_name}} successfully',
+            'data': {
+                'total': total,
+                '{{file_name}}': to_dict(objects)
+            }
+        }
+
+    def post(self):
+        params = request.get_json(force=True)
+
+        with session_scope(self.session):
+            new_object = self.{{file_name}}_service.create(
+                **params
+            )
+            object_json = to_dict(new_object)
+
+        return {
+            'message': 'Create {{file_name}} successfully',
+            'data': {
+                '{{file_name}}': object_json
+            }
+        }
+

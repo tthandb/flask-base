@@ -1,0 +1,81 @@
+stages:
+  # - test
+  - build
+  - deploy
+variables:
+  CI_REGISTRY: registry.gitlab.com
+  IMAGE_TAG: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
+  VERSION: v1.0
+
+.image-runner: &image_runner
+  image: docker:18.09.7
+  services:
+    - docker:18.09.7-dind
+
+# api-test:
+#   except:
+#     - tags
+#   image: docker/compose:latest
+#   stage: test
+#   before_script:
+#     - docker build -t flask-backend:$BRANCH -f ./docker/Dockerfile .
+#   script:
+#     - docker-compose -f docker-compose.test.yml run api-test
+#   after_script:
+#     - docker-compose -f docker-compose.test.yml down
+
+# build-api:
+#   stage: build
+#   image: docker:18.09.7
+#   services:
+#     - docker:18.09.7-dind
+#   script:
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker build -t $IMAGE_TAG-$CI_COMMIT_SHORT_SHA -f docker/api.Dockerfile .
+#     - docker push $IMAGE_TAG-$CI_COMMIT_SHORT_SHA
+#   only:
+#     - dev
+#     - develop
+#     - master
+
+# build-worker:
+#   <<: *image_runner
+#   stage: build
+#   script:
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH/base:master -f docker/base.Dockerfile .
+#     - docker push $CI_REGISTRY/$CI_PROJECT_PATH/base:master
+#     # build test-worker
+#     - sed -i "s#IMAGE_NAME#$CI_REGISTRY/$CI_PROJECT_PATH/base#g" docker/test-worker.Dockerfile
+#     - sed -i "s#IMAGE_TAG#$CI_COMMIT_REF_NAME#g" docker/test-worker.Dockerfile
+#     - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH/test-worker:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -f docker/test-worker.Dockerfile .
+#     # Push Image
+#     - docker push $CI_REGISTRY/$CI_PROJECT_PATH/test-worker:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+
+#   only:
+#     - master
+#     - develop
+
+# .deploy_template:
+#   stage: deploy
+#   image: pstauffer/curl
+#   script:
+#     - >
+#       curl --compressed -sS
+#       -H 'Connection: keep-alive'
+#       -u "${WEBHOOKD_BASIC_AUTH}"
+#       "${WEBHOOKD_URL}?application=${APP_NAME}&branch=${CI_COMMIT_BRANCH}&commit=${CI_COMMIT_SHA}&version=${VERSION}"
+#       &> /dev/stdout | tee -a /tmp/status
+# deploy_staging:
+#   extends: .deploy_template
+#   environment:
+#     name: staging
+#   only:
+#     - develop
+
+# deploy_production:
+#   extends: .deploy_template
+#   environment:
+#     name: production
+#   only:
+#     - master
